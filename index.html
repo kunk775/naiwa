@@ -24,8 +24,57 @@
     <script src="./assets/quiz-ad.js"></script>
     <script type="module" crossorigin src="./assets/game-BDvRcsxG.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/game-DhG0Y0Ys.css">
+    <style>
+      /* 测试版入口：贴右侧边，避开摇杆/技能/血条 */
+      .test-tab {
+        position: fixed;
+        top: 50%;
+        right: 0;
+        z-index: 60;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 7px 13px;
+        border: 1px solid rgba(233, 196, 106, 0.34);
+        border-right: 0;
+        border-radius: 11px 0 0 11px;
+        background: rgba(12, 9, 18, 0.82);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        box-shadow: -8px 0 22px rgba(0, 0, 0, 0.35);
+        color: #e9c46a;
+        font: 500 11px/1 "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+        letter-spacing: 0.2em;
+        text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+        transition: color 0.2s, background 0.2s, padding 0.2s;
+      }
+      .test-tab:hover,
+      .test-tab:focus-visible {
+        color: #f6d992;
+        background: rgba(35, 25, 48, 0.95);
+        padding-right: 10px;
+        outline: none;
+      }
+      .test-tab span {
+        writing-mode: vertical-rl;
+        text-orientation: upright;
+      }
+      .test-tab i {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #8ee6c8;
+        box-shadow: 0 0 8px #8ee6c8;
+      }
+    </style>
   </head>
   <body>
     <main id="app"></main>
+    <a class="test-tab" href="./testverson/dev-launcher.html" aria-label="进入测试版（需要口令）" title="测试版 · 需要口令">
+      <i aria-hidden="true"></i><span>测试版</span>
+    </a>
   </body>
 </html>
