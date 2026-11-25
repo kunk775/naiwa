@@ -1,0 +1,1269 @@
+<!doctype html>
+<html lang="zh-CN" class="pw-locked">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0c0912" />
+<title>勇者奶蛙传 · 测试启动器</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+<style>
+  :root{
+    color-scheme: dark;
+    --bg:#0c0912;
+    --panel:rgba(34,24,48,.82);
+    --panel-2:rgba(17,12,25,.72);
+    --line:rgba(238,219,255,.12);
+    --line-strong:rgba(238,219,255,.22);
+    --ink:#f6eeff;
+    --muted:#a99bbd;
+    --faint:#7e708f;
+    --gold:#e9c46a;
+    --gold-2:#f6d992;
+    --violet:#b07cff;
+    --mint:#8ee6c8;
+    --danger:#ff8a9a;
+    --final:#ff9e7a;
+    --radius:18px;
+    --shadow:0 24px 60px rgba(0,0,0,.42);
+    --serif:ui-serif,"Songti SC","STSong","Noto Serif CJK SC",Georgia,serif;
+    --sans:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    --mono:ui-monospace,"SFMono-Regular",Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html{min-height:100%}
+  body{
+    margin:0;min-height:100vh;padding-bottom:112px;
+    font-family:var(--sans);color:var(--ink);
+    background:
+      radial-gradient(1200px 620px at 12% -8%,rgba(176,124,255,.20),transparent 62%),
+      radial-gradient(1000px 560px at 104% 112%,rgba(142,230,200,.10),transparent 62%),
+      linear-gradient(180deg,#0d0a14 0%,#0b0811 56%,#0e0a15 100%);
+  }
+  body::before{
+    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:
+      linear-gradient(180deg,rgba(233,196,106,.055),transparent 20%),
+      repeating-linear-gradient(90deg,rgba(255,255,255,.018) 0 1px,transparent 1px 96px);
+    mask-image:linear-gradient(180deg,#000 0%,transparent 78%);
+  }
+  button,input{font:inherit;color:inherit}
+  button{cursor:pointer}
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:40;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,rgba(10,8,16,.94),rgba(10,8,16,.74));
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  }
+  .topbar-inner{
+    max-width:1440px;margin:0 auto;padding:13px 26px;
+    display:flex;align-items:center;justify-content:space-between;gap:20px;
+  }
+  .brand{display:flex;align-items:center;gap:14px;min-width:0}
+  .brand-mark{
+    width:46px;height:46px;flex:0 0 auto;border-radius:14px;
+    display:grid;place-items:center;
+    color:var(--gold);font:700 21px/1 var(--serif);
+    border:1px solid rgba(233,196,106,.42);
+    background:radial-gradient(circle at 32% 20%,#3b2a52,#171020 70%);
+    box-shadow:0 0 28px rgba(233,196,106,.13),inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  .brand-copy{min-width:0}
+  .brand-copy h1{
+    margin:0;font:600 20px/1.2 var(--serif);letter-spacing:.035em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .brand-copy h1 em{
+    font-style:normal;font-size:11px;font-weight:600;letter-spacing:.14em;
+    color:var(--gold);margin-left:10px;padding:3px 8px;border-radius:999px;
+    border:1px solid rgba(233,196,106,.28);background:rgba(233,196,106,.07);
+    vertical-align:2px;
+  }
+  .brand-copy p{
+    margin:5px 0 0;font:500 10.5px/1.2 var(--mono);letter-spacing:.13em;
+    color:var(--faint);text-transform:uppercase;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .top-actions{display:flex;align-items:center;gap:9px;flex:0 0 auto}
+  .chip{
+    display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;
+    border:1px solid var(--line);background:rgba(255,255,255,.035);
+    font-size:11px;color:var(--muted);white-space:nowrap;
+  }
+  .chip::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--mint);box-shadow:0 0 8px var(--mint)}
+  .chip.empty::before{background:var(--faint);box-shadow:none}
+  .link-btn{
+    display:inline-flex;align-items:center;gap:8px;padding:8px 13px;border-radius:999px;
+    border:1px solid var(--line);background:transparent;font-size:12px;color:var(--muted);
+    transition:border-color .2s,color .2s,background .2s;
+  }
+  .link-btn:hover{border-color:var(--line-strong);color:var(--ink);background:rgba(255,255,255,.045)}
+
+  /* ---------- shell ---------- */
+  .shell{max-width:1440px;margin:0 auto;padding:0 26px}
+  .layout{
+    display:grid;grid-template-columns:minmax(0,1.5fr) minmax(380px,.72fr);
+    grid-template-rows:auto auto;gap:16px;padding:20px 0 28px;
+  }
+  .panel{
+    position:relative;border:1px solid var(--line);border-radius:var(--radius);
+    background:linear-gradient(158deg,rgba(38,27,53,.84),rgba(18,13,27,.92));
+    box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.055);
+    padding:19px 20px 20px;overflow:hidden;
+    animation:rise .55s cubic-bezier(.2,.7,.2,1) both;
+  }
+  .panel::before{
+    content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+    background:linear-gradient(120deg,rgba(255,255,255,.045),transparent 34%);
+  }
+  .panel.zones{grid-column:1;grid-row:1;animation-delay:.04s}
+  .panel.upgrades{grid-column:1;grid-row:2;animation-delay:.1s}
+  .panel.bestiary{
+    grid-column:2;grid-row:1/3;display:flex;flex-direction:column;min-height:0;
+    max-height:calc(100vh - 218px);position:sticky;top:96px;animation-delay:.16s;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  .panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}
+  .head-main{display:flex;align-items:center;gap:12px;min-width:0}
+  .step{
+    width:34px;height:34px;flex:0 0 auto;border-radius:50%;
+    display:grid;place-items:center;font:600 12px/1 var(--mono);letter-spacing:.06em;
+    color:var(--gold);border:1px solid rgba(233,196,106,.34);
+    background:rgba(233,196,106,.06);box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .head-copy h2{margin:0;font:600 17px/1.15 var(--serif);letter-spacing:.03em}
+  .head-copy p{margin:4px 0 0;font-size:11px;color:var(--faint);letter-spacing:.02em}
+  .head-side{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+  .counter{font:500 11px/1 var(--mono);color:var(--gold);letter-spacing:.06em}
+  .mini-actions{display:flex;gap:4px}
+  .mini-btn{
+    padding:5px 9px;border-radius:999px;border:1px solid var(--line);
+    background:rgba(255,255,255,.03);color:var(--muted);font-size:11px;
+    transition:.2s;white-space:nowrap;
+  }
+  .mini-btn:hover{border-color:rgba(233,196,106,.4);color:var(--gold-2)}
+
+  /* ---------- zones ---------- */
+  .zone-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+  .zone-card{
+    position:relative;text-align:left;min-height:98px;padding:11px 11px 10px;
+    display:flex;flex-direction:column;gap:5px;border-radius:13px;
+    border:1px solid rgba(255,255,255,.075);background:rgba(11,8,18,.5);
+    transition:transform .18s,border-color .18s,background .18s,box-shadow .18s;
+  }
+  .zone-card:hover{transform:translateY(-2px);border-color:rgba(233,196,106,.32);background:rgba(42,29,60,.62)}
+  .zone-card.selected{
+    border-color:rgba(233,196,106,.78);
+    background:linear-gradient(152deg,rgba(233,196,106,.16),rgba(176,124,255,.075));
+    box-shadow:0 0 0 1px rgba(233,196,106,.18),0 12px 30px rgba(0,0,0,.35);
+  }
+  .zone-idx{font:600 9.5px/1 var(--mono);letter-spacing:.14em;color:var(--faint)}
+  .zone-card.selected .zone-idx{color:var(--gold)}
+  .zone-name{font:600 15.5px/1.2 var(--serif);letter-spacing:.02em;color:var(--ink)}
+  .zone-meta{font-size:10.5px;line-height:1.35;color:var(--muted)}
+  .zone-boss{margin-top:auto;font-size:9.5px;line-height:1.2;color:var(--gold);opacity:.84}
+  .zone-check{
+    position:absolute;right:9px;top:9px;width:17px;height:17px;border-radius:50%;
+    display:grid;place-items:center;font-size:9px;color:#1a1226;
+    background:var(--gold);opacity:0;transform:scale(.6);transition:.18s;
+    box-shadow:0 0 14px rgba(233,196,106,.4);
+  }
+  .zone-card.selected .zone-check{opacity:1;transform:scale(1)}
+  .zone-card.final .zone-idx{color:var(--final);letter-spacing:.1em}
+  .zone-card.final.selected{
+    border-color:rgba(255,158,122,.82);
+    background:linear-gradient(152deg,rgba(255,158,122,.15),rgba(176,124,255,.07));
+    box-shadow:0 0 0 1px rgba(255,158,122,.2),0 12px 30px rgba(0,0,0,.4);
+  }
+  .zone-card.final.selected .zone-check{background:var(--final);box-shadow:0 0 14px rgba(255,158,122,.45)}
+  .zone-card.final .zone-boss{color:var(--final)}
+
+  /* ---------- upgrades ---------- */
+  .up-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+  .up-card{
+    position:relative;display:grid;grid-template-columns:36px minmax(0,1fr);gap:9px;
+    padding:11px 11px 10px;text-align:left;border-radius:13px;
+    border:1px solid rgba(255,255,255,.075);background:rgba(11,8,18,.46);
+    transition:transform .18s,border-color .18s,background .18s,box-shadow .18s;
+  }
+  .up-card:hover{transform:translateY(-2px);border-color:rgba(176,124,255,.34);background:rgba(38,26,56,.62)}
+  .up-card.selected{
+    border-color:rgba(233,196,106,.68);
+    background:linear-gradient(150deg,rgba(233,196,106,.115),rgba(176,124,255,.06));
+    box-shadow:0 0 0 1px rgba(233,196,106,.14),0 10px 24px rgba(0,0,0,.28);
+  }
+  .up-icon{
+    width:36px;height:36px;border-radius:11px;display:grid;place-items:center;
+    font-size:16px;color:var(--gold);border:1px solid rgba(233,196,106,.2);
+    background:rgba(233,196,106,.07);transition:.18s;
+  }
+  .up-card.selected .up-icon{background:rgba(233,196,106,.2);box-shadow:0 0 18px rgba(233,196,106,.16)}
+  .up-copy{min-width:0}
+  .up-copy b{display:block;font-size:13px;line-height:1.25;letter-spacing:.01em}
+  .up-copy small{display:block;margin-top:4px;font-size:10.5px;line-height:1.45;color:var(--muted)}
+  .up-flag{
+    position:absolute;right:9px;top:8px;font:600 9px/1 var(--mono);
+    color:var(--gold);opacity:0;transition:.18s;letter-spacing:.08em;
+  }
+  .up-card.selected .up-flag{opacity:1}
+  .up-note{margin:10px 0 0;font-size:10.5px;color:var(--faint);line-height:1.4}
+  .up-note b{color:var(--muted);font-weight:500}
+
+  /* ---------- bestiary ---------- */
+  .bestiary .panel-head{margin-bottom:10px}
+  .bestiary-body{display:flex;flex-direction:column;min-height:0;flex:1}
+  .filters{display:flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:999px;background:rgba(0,0,0,.22)}
+  .filter-btn{
+    padding:5px 10px;border-radius:999px;border:0;background:transparent;
+    font-size:10.5px;color:var(--muted);transition:.18s;white-space:nowrap;
+  }
+  .filter-btn:hover{color:var(--ink)}
+  .filter-btn.active{background:var(--gold);color:#1b1226;font-weight:600}
+  .bestiary-search{position:relative;margin:9px 0 8px}
+  .bestiary-search input{
+    width:100%;padding:8px 11px 8px 29px;border-radius:10px;
+    border:1px solid var(--line);background:rgba(0,0,0,.24);
+    color:var(--ink);font-size:11.5px;outline:none;transition:border-color .2s;
+  }
+  .bestiary-search input:focus{border-color:rgba(233,196,106,.52)}
+  .bestiary-search::before{
+    content:"⌕";position:absolute;left:10px;top:50%;transform:translateY(-50%);
+    font:400 15px/1 var(--serif);color:var(--faint);pointer-events:none;
+  }
+  .bestiary-count{font:500 10px/1 var(--mono);color:var(--faint);letter-spacing:.08em;white-space:nowrap}
+  .bestiary-list{
+    display:flex;flex-direction:column;gap:5px;overflow:auto;min-height:0;flex:1;
+    margin:0 -7px;padding:1px 7px 4px;scrollbar-width:thin;
+    scrollbar-color:rgba(233,196,106,.25) transparent;
+  }
+  .bestiary-list::-webkit-scrollbar{width:5px}
+  .bestiary-list::-webkit-scrollbar-thumb{background:rgba(233,196,106,.22);border-radius:4px}
+  .monster{
+    display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:9px;align-items:center;
+    padding:6px 7px;border-radius:11px;border:1px solid transparent;
+    transition:background .18s,border-color .18s;
+  }
+  .monster:hover{background:rgba(255,255,255,.038);border-color:var(--line)}
+  .monster.in-zone{border-left:2px solid rgba(233,196,106,.52);background:rgba(233,196,106,.045);border-radius:4px 11px 11px 4px}
+  .monster-art{
+    width:44px;height:44px;border-radius:10px;overflow:hidden;
+    background:linear-gradient(148deg,#f5eef9,#d9cce6);
+    box-shadow:inset 0 0 0 1px rgba(28,18,40,.10);
+  }
+  .monster-art img{display:block;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
+  .monster-copy{min-width:0}
+  .monster-copy .line1{display:flex;align-items:center;gap:5px;min-width:0}
+  .monster-copy b{font-size:12.5px;line-height:1.2;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .monster-id{font:400 8.5px/1 var(--mono);color:var(--faint);letter-spacing:.04em;white-space:nowrap}
+  .tag{
+    flex:0 0 auto;font-size:8.5px;line-height:1;padding:2px 5px;border-radius:999px;
+    border:1px solid var(--line);color:var(--muted);letter-spacing:.04em;
+  }
+  .tag.elite{color:var(--violet);border-color:rgba(176,124,255,.34);background:rgba(176,124,255,.08)}
+  .tag.boss{color:var(--gold);border-color:rgba(233,196,106,.34);background:rgba(233,196,106,.075)}
+  .tag.final{color:var(--final);border-color:rgba(255,158,122,.4);background:rgba(255,158,122,.08)}
+  .monster-role{display:block;margin-top:2px;font-size:9.5px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .monster-hp{text-align:right;min-width:44px}
+  .monster-hp b{font:600 14px/1 var(--serif);color:var(--gold)}
+  .monster-hp small{display:block;margin-top:2px;font:500 8px/1 var(--mono);letter-spacing:.12em;color:var(--faint)}
+  .monster-where{grid-column:2/-1;margin-top:-3px;font-size:9px;color:var(--faint)}
+  .monster-where .now{color:var(--gold)}
+  .empty{padding:24px 10px;text-align:center;font-size:12px;color:var(--faint)}
+  .bestiary-foot{margin-top:8px;padding-top:9px;border-top:1px solid var(--line);font-size:9.5px;line-height:1.5;color:var(--faint)}
+
+  /* ---------- footer ---------- */
+  .launchbar{
+    position:fixed;left:0;right:0;bottom:0;z-index:50;
+    border-top:1px solid var(--line);
+    background:linear-gradient(180deg,rgba(10,8,16,.70),rgba(10,8,16,.96));
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  }
+  .launchbar-inner{
+    max-width:1440px;margin:0 auto;padding:12px 26px;
+    display:flex;align-items:center;justify-content:space-between;gap:20px;
+  }
+  .launch-summary{min-width:0}
+  .sum-zone{display:block;font:600 15px/1.2 var(--serif);letter-spacing:.02em}
+  .sum-zone span{color:var(--gold);font-family:var(--mono);font-size:10px;letter-spacing:.1em;margin-right:8px}
+  .sum-meta{display:block;margin-top:4px;font-size:10.5px;color:var(--muted)}
+  .sum-warn{color:var(--faint)}
+  .launch-actions{display:flex;align-items:center;gap:9px;flex:0 0 auto}
+  .btn{
+    border:1px solid var(--line);background:transparent;border-radius:999px;
+    padding:10px 15px;font-size:12px;color:var(--muted);
+    transition:transform .18s,border-color .18s,background .18s,box-shadow .18s;
+    white-space:nowrap;
+  }
+  .btn:hover{border-color:var(--line-strong);background:rgba(255,255,255,.045);color:var(--ink)}
+  .btn.ghost-danger:hover{border-color:rgba(255,138,154,.4);color:var(--danger);background:rgba(255,138,154,.06)}
+  .btn.primary{
+    position:relative;overflow:hidden;
+    padding:12px 24px 12px 25px;border:0;font-weight:700;font-size:13.5px;letter-spacing:.02em;
+    color:#21152a;background:linear-gradient(135deg,#f6d992,#e8b949 72%,#dfae3f);
+    box-shadow:0 10px 30px rgba(233,196,106,.22),inset 0 1px 0 rgba(255,255,255,.55);
+  }
+  .btn.primary small{display:block;margin-top:2px;font-size:9px;font-weight:600;letter-spacing:.12em;opacity:.62}
+  .btn.primary::after{
+    content:"";position:absolute;inset:0;transform:translateX(-120%);
+    background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.42) 50%,transparent 70%);
+  }
+  .btn.primary:hover{transform:translateY(-1px);box-shadow:0 14px 36px rgba(233,196,106,.3)}
+  .btn.primary:hover::after{animation:sheen .7s ease}
+  @keyframes sheen{to{transform:translateX(120%)}}
+
+  /* ---------- toast / dialog ---------- */
+  .toast{
+    position:fixed;left:50%;bottom:96px;z-index:80;transform:translate(-50%,8px);
+    padding:9px 15px;border-radius:999px;font-size:12px;
+    border:1px solid rgba(233,196,106,.32);background:rgba(24,17,35,.94);
+    color:var(--ink);box-shadow:0 12px 34px rgba(0,0,0,.45);
+    opacity:0;pointer-events:none;transition:.22s;max-width:calc(100vw - 28px);text-align:center;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .toast.error{border-color:rgba(255,138,154,.4);color:#ffd9df}
+  dialog{
+    width:min(520px,calc(100vw - 28px));padding:0;border-radius:18px;
+    border:1px solid var(--line-strong);background:#171021;color:var(--ink);
+    box-shadow:0 30px 90px rgba(0,0,0,.6);
+  }
+  dialog::backdrop{background:rgba(6,4,10,.72);backdrop-filter:blur(4px)}
+  .dialog-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 0}
+  .dialog-head h3{margin:0;font:600 16px/1.2 var(--serif)}
+  .dialog-close{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink);font-size:15px;line-height:1;transition:.2s}
+  .dialog-close:hover{border-color:rgba(233,196,106,.5);color:var(--gold);background:rgba(233,196,106,.08)}
+  .dialog-body{padding:12px 18px 4px;font-size:12px;line-height:1.6;color:var(--muted)}
+  .dialog-body pre{
+    max-height:46vh;overflow:auto;margin:10px 0 0;padding:12px;border-radius:10px;
+    background:rgba(0,0,0,.28);border:1px solid var(--line);
+    font:11px/1.5 var(--mono);color:#d8cce8;white-space:pre-wrap;word-break:break-all;
+  }
+  .dialog-actions{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px 16px}
+  .dialog-actions .btn.danger{border-color:rgba(255,138,154,.4);color:var(--danger)}
+  .dialog-actions .btn.danger:hover{background:rgba(255,138,154,.1);color:#ffd9df}
+
+  /* ---------- game stage ---------- */
+  body.stage-open{overflow:hidden}
+  .stage{position:fixed;inset:0;z-index:70;display:none;flex-direction:column;background:#08060d}
+  .stage.open{display:flex}
+  .stage-bar{
+    flex:0 0 auto;height:42px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:0 10px 0 8px;border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#141020,#0d0a14);
+  }
+  .stage-left,.stage-actions{display:flex;align-items:center;gap:6px;min-width:0}
+  .stage-btn{
+    border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:999px;
+    padding:6px 11px;font-size:11px;color:var(--muted);white-space:nowrap;transition:.18s;
+  }
+  .stage-btn:hover{border-color:rgba(233,196,106,.4);color:var(--gold-2);background:rgba(233,196,106,.06)}
+  .stage-btn:disabled{opacity:.32;pointer-events:none}
+  .stage-title{
+    margin-left:4px;font:500 11px/1 var(--mono);letter-spacing:.08em;color:var(--gold);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .stage-actions .stage-btn,.stage-actions a{font-size:10.5px;padding:6px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+  .stage-actions a:hover{color:var(--gold-2);border-color:rgba(233,196,106,.4);background:rgba(233,196,106,.06)}
+  .stage iframe{flex:1;width:100%;min-height:0;border:0;background:#0b0811;display:block}
+  .stage.open{animation:stageIn .24s ease both}
+  @keyframes stageIn{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:1180px){
+    .layout{grid-template-columns:minmax(0,1fr);}
+    .panel.bestiary{grid-column:1;grid-row:3;position:static;max-height:none;height:min(64vh,620px)}
+    .zone-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+  }
+  @media (max-width:900px){
+    .zone-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .up-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .brand-copy h1 em{display:none}
+  }
+  @media (max-width:720px){
+    .topbar-inner{padding:11px 16px;gap:12px}
+    .brand-mark{width:38px;height:38px;font-size:18px}
+    .brand-copy h1{font-size:16px}
+    .brand-copy p{display:none}
+    .top-actions .link-btn{display:none}
+    .shell{padding:0 14px}
+    .layout{gap:12px;padding:14px 0 20px}
+    .panel{padding:15px 14px 16px}
+    .zone-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .zone-card{min-height:88px}
+    .up-grid{grid-template-columns:minmax(0,1fr)}
+    .panel-head{align-items:flex-start;gap:8px}
+    .head-side{flex-direction:column;align-items:flex-end;gap:5px}
+    .launchbar-inner{padding:10px 14px;flex-wrap:wrap;gap:10px}
+    .launch-summary{flex:1 1 100%}
+    .launch-actions{width:100%;justify-content:space-between}
+    .btn.primary{flex:1;text-align:center}
+    body{padding-bottom:132px}
+    .toast{bottom:120px}
+    .bestiary-list{max-height:52vh}
+    .filters .filter-btn{padding:5px 8px}
+    .stage-bar{height:auto;min-height:44px;flex-wrap:wrap;row-gap:5px;padding:6px 8px}
+    .stage-left{flex:1 1 100%}
+    .stage-title{font-size:10px}
+    .stage-actions{flex:1 1 100%;justify-content:space-between;gap:4px}
+    .stage-actions .stage-btn,.stage-actions a{font-size:9.5px;padding:5px 7px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  }
+
+  /* ---------- 测试版口令门 ---------- */
+  html.pw-locked,body.pw-locked{overflow:hidden}
+  body.pw-locked>*:not(#pwGate){visibility:hidden!important}
+  #pwGate{
+    position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:20px;
+    background:
+      radial-gradient(900px 520px at 50% -10%,rgba(176,124,255,.22),transparent 64%),
+      radial-gradient(760px 460px at 92% 108%,rgba(142,230,200,.10),transparent 62%),
+      #0b0811;
+  }
+  .pw-card{
+    width:min(400px,100%);padding:26px 24px 22px;border-radius:20px;text-align:center;
+    border:1px solid rgba(238,219,255,.18);
+    background:linear-gradient(158deg,rgba(40,29,57,.96),rgba(17,12,26,.98));
+    box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06);
+    animation:rise .5s cubic-bezier(.2,.7,.2,1) both;
+  }
+  .pw-card.shake{animation:pwShake .38s ease}
+  @keyframes pwShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+  .pw-badge{
+    width:52px;height:52px;margin:0 auto 14px;border-radius:16px;display:grid;place-items:center;
+    font:700 23px/1 var(--serif);color:var(--gold);
+    border:1px solid rgba(233,196,106,.42);background:radial-gradient(circle at 32% 20%,#3b2a52,#171020 70%);
+    box-shadow:0 0 30px rgba(233,196,106,.14),inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  .pw-card h2{margin:0;font:600 19px/1.3 var(--serif);letter-spacing:.04em}
+  .pw-sub{margin:8px 0 18px;font-size:12px;line-height:1.6;color:var(--muted)}
+  .pw-field{display:block;text-align:left}
+  .pw-field span{display:block;margin:0 0 7px;font:500 10.5px/1 var(--mono);letter-spacing:.12em;color:var(--faint);text-transform:uppercase}
+  .pw-field input{
+    width:100%;padding:12px 14px;border-radius:12px;font-size:15px;letter-spacing:.06em;
+    color:var(--ink);background:rgba(9,6,14,.72);
+    border:1px solid var(--line-strong);outline:none;
+    transition:border-color .2s,box-shadow .2s;
+  }
+  .pw-field input:focus{border-color:rgba(233,196,106,.6);box-shadow:0 0 0 3px rgba(233,196,106,.12)}
+  .pw-error{min-height:18px;margin:10px 0 4px;font-size:12px;color:var(--danger)}
+  .pw-btn{
+    width:100%;margin-top:6px;padding:12px 16px;border-radius:12px;border:1px solid rgba(233,196,106,.5);
+    font-size:14px;font-weight:600;letter-spacing:.06em;color:#20160a;
+    background:linear-gradient(180deg,var(--gold-2),var(--gold));
+    transition:filter .2s,transform .12s;
+  }
+  .pw-btn:hover{filter:brightness(1.05)}
+  .pw-btn:active{transform:translateY(1px)}
+</style>
+</head>
+<body class="pw-locked">
+  <div id="pwGate" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
+    <form class="pw-card" id="pwForm" autocomplete="off">
+      <div class="pw-badge" aria-hidden="true">蛙</div>
+      <h2 id="pwTitle">测试版 · 请输入口令</h2>
+      <p class="pw-sub">含章节直达 / 开局异能 / 怪物图鉴，仅限内部测试使用。</p>
+      <label class="pw-field">
+        <span>Test Passphrase</span>
+        <input id="pwInput" type="password" inputmode="text" autocomplete="current-password" placeholder="请输入测试口令" required />
+      </label>
+      <p class="pw-error" id="pwError" role="alert"></p>
+      <button class="pw-btn" type="submit">进入测试版</button>
+    </form>
+  </div>
+  <script>
+  (function(){
+    var KEY = 'naiwa:test:unlock';
+    var gate = document.getElementById('pwGate');
+    function unlock(){
+      document.documentElement.classList.remove('pw-locked');
+      document.body.classList.remove('pw-locked');
+      if(gate && gate.parentNode) gate.parentNode.removeChild(gate);
+    }
+    try{ if(sessionStorage.getItem(KEY) === '1'){ unlock(); return; } }catch(_){}
+    var form = document.getElementById('pwForm');
+    var input = document.getElementById('pwInput');
+    var error = document.getElementById('pwError');
+    var TARGET = 'd2xwMTIzNDU2'; /* btoa('wlp123456') */
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var value = (input.value || '').trim();
+      var ok = false;
+      try{ ok = !!value && btoa(value) === TARGET; }catch(_){ ok = false; }
+      if(ok){
+        error.textContent = '';
+        try{ sessionStorage.setItem(KEY, '1'); }catch(_){}
+        unlock();
+        return;
+      }
+      error.textContent = '口令不正确，请重试';
+      form.classList.remove('shake');
+      void form.offsetWidth;
+      form.classList.add('shake');
+      input.select();
+    });
+    setTimeout(function(){ try{ input.focus(); }catch(_){} }, 80);
+  })();
+  </script>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">蛙</div>
+        <div class="brand-copy">
+          <h1>勇者奶蛙传 <em>测试启动器</em></h1>
+          <p>Dev Launcher · 章节直达 / 开局异能 / 怪物图鉴</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <span id="saveChip" class="chip empty">未检测到存档</span>
+        <a class="link-btn" href="../index.html" target="_blank" rel="noopener">打开游戏 <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <div class="layout">
+      <section class="panel zones" aria-labelledby="zonesTitle">
+        <div class="panel-head">
+          <div class="head-main">
+            <span class="step" aria-hidden="true">01</span>
+            <div class="head-copy">
+              <h2 id="zonesTitle">选择关卡</h2>
+              <p>十章剧情 · 启动后直接进入该章开头</p>
+            </div>
+          </div>
+          <div class="head-side">
+            <span class="counter" id="zoneCounter">CH.01</span>
+          </div>
+        </div>
+        <div class="zone-grid" id="zoneGrid" role="list"></div>
+      </section>
+
+      <section class="panel upgrades" aria-labelledby="upTitle">
+        <div class="panel-head">
+          <div class="head-main">
+            <span class="step" aria-hidden="true">02</span>
+            <div class="head-copy">
+              <h2 id="upTitle">开局异能</h2>
+              <p>对应游戏内升级卡 · 所选在开局时直接生效</p>
+            </div>
+          </div>
+          <div class="head-side">
+            <span class="counter" id="upCount">0 / 9</span>
+            <div class="mini-actions">
+              <button type="button" class="mini-btn" id="selectAll">全选</button>
+              <button type="button" class="mini-btn" id="clearAll">清空</button>
+            </div>
+          </div>
+        </div>
+        <div class="up-grid" id="upGrid"></div>
+        <p class="up-note">防御系需先选「闪耀」才能选「辉煌」；<b>奶泡震波 / 回旋奶镖</b>默认可用，无需在此配置。</p>
+      </section>
+
+      <aside class="panel bestiary" aria-labelledby="bestTitle">
+        <div class="panel-head">
+          <div class="head-main">
+            <span class="step" aria-hidden="true">03</span>
+            <div class="head-copy">
+              <h2 id="bestTitle">怪物图鉴</h2>
+              <p>基础数值 · 不含章节与波次倍率</p>
+            </div>
+          </div>
+          <span class="bestiary-count" id="bestiaryCount">—</span>
+        </div>
+        <div class="bestiary-body">
+          <div class="filters" role="group" aria-label="怪物筛选">
+            <button type="button" class="filter-btn" data-filter="zone">本章</button>
+            <button type="button" class="filter-btn active" data-filter="all">全部</button>
+            <button type="button" class="filter-btn" data-filter="boss">首领</button>
+          </div>
+          <label class="bestiary-search">
+            <span class="sr-only">搜索怪物</span>
+            <input id="bestSearch" type="search" placeholder="搜索名称或 kind，例如 dog" autocomplete="off" />
+          </label>
+          <div class="bestiary-list" id="bestiaryList" role="list"></div>
+          <div class="bestiary-foot">首领数值为 <b>makeActor</b> 基础 HP；章节越靠后，普通怪会按波次与章节倍率提升。康神为最终章独立首领。</div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="launchbar">
+    <div class="launchbar-inner">
+      <div class="launch-summary">
+        <span class="sum-zone"><span id="sumChapter">CH.01</span><b id="sumName">奶笑村</b></span>
+        <span class="sum-meta" id="sumMeta">异能 0 项 · 本章敌人 3 种 · <span class="sum-warn">会覆盖本机剧情存档</span></span>
+      </div>
+      <div class="launch-actions">
+        <button type="button" class="btn ghost-danger" id="resetSave">清除存档</button>
+        <button type="button" class="btn ghost" id="previewSave">存档 JSON</button>
+        <button type="button" class="btn primary" id="launchBtn">启动游戏<small>自动进入所选章节</small></button>
+      </div>
+    </div>
+  </footer>
+
+  <div class="stage" id="stage" aria-hidden="true">
+    <div class="stage-bar">
+      <div class="stage-left">
+        <button type="button" class="stage-btn" id="stageBack">← 返回启动器</button>
+        <span class="stage-title" id="stageTitle">第 10 章 · 无声王座</span>
+      </div>
+      <div class="stage-actions">
+        <button type="button" class="stage-btn" id="stageReenter">重进本章</button>
+        <button type="button" class="stage-btn" id="stagePrev">上一章</button>
+        <button type="button" class="stage-btn" id="stageNext">下一章</button>
+        <a href="../index.html" target="_blank" rel="noopener">新标签打开 ↗</a>
+      </div>
+    </div>
+    <iframe id="gameFrame" title="游戏画面" allow="autoplay; fullscreen; clipboard-write"></iframe>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog id="previewDialog">
+    <div class="dialog-head">
+      <h3>将要写入的存档</h3>
+      <button type="button" class="dialog-close" data-close="previewDialog" aria-label="关闭">×</button>
+    </div>
+    <div class="dialog-body">
+      <span id="previewMeta"></span>
+      <pre id="previewCode"></pre>
+    </div>
+    <div class="dialog-actions">
+      <button type="button" class="btn" data-close="previewDialog">关闭</button>
+      <button type="button" class="btn" id="copySave">复制 JSON</button>
+    </div>
+  </dialog>
+
+  <dialog id="resetDialog">
+    <div class="dialog-head">
+      <h3>清除本机剧情存档？</h3>
+      <button type="button" class="dialog-close" data-close="resetDialog" aria-label="关闭">×</button>
+    </div>
+    <div class="dialog-body">只会删除剧情模式的进度（键名 <span style="font-family:var(--mono);color:#cdbde2">naiwa-run-v1</span>），不会影响设置、最高纪录与无尽模式纪录。此操作不可撤销。</div>
+    <div class="dialog-actions">
+      <button type="button" class="btn" data-close="resetDialog">取消</button>
+      <button type="button" class="btn danger" id="confirmReset">清除存档</button>
+    </div>
+  </dialog>
+
+  <dialog id="fileDialog">
+    <div class="dialog-head">
+      <h3>需要通过本地服务器启动</h3>
+      <button type="button" class="dialog-close" data-close="fileDialog" aria-label="关闭">×</button>
+    </div>
+    <div class="dialog-body">
+      浏览器禁止直接双击打开的页面加载游戏模块，所以这种方式无法进入关卡。<br />
+      请先运行 <b>启动游戏.bat</b>，然后在浏览器打开：<br />
+      <span style="font-family:var(--mono);color:#cdbde2">http://127.0.0.1:8788/testverson/dev-launcher.html</span><br />
+      <small>若窗口提示端口被占用，请按窗口里显示的端口替换 8788。</small>
+    </div>
+    <div class="dialog-actions">
+      <button type="button" class="btn" data-close="fileDialog">知道了</button>
+      <button type="button" class="btn primary" id="fileOpenHttp">用服务器打开</button>
+    </div>
+  </dialog>
+
+<script>
+(function(){
+  'use strict';
+
+  const SAVE_KEY = 'naiwa:233-story:naiwa-run-v1';
+  const PREFS_KEY = 'naiwa-test-launcher-prefs-v1';
+
+  const ZONES = [
+    { name:'奶笑村', waves:[5,8], pool:['chaser','shooter','spore'], special:null, boss:null },
+    { name:'咕嘎小径', waves:[7,11], pool:['chaser','jester','shooter','bell','spore'], special:'penguin', boss:null },
+    { name:'刀盾山道', waves:[9,13,17], pool:['shield','chaser','mimic','shooter','bell','slime'], special:'dog', boss:null },
+    { name:'风暴断桥', waves:[10,14,18], pool:['jester','bomber','shooter','mimic','bell','ghost'], special:null, boss:'captain' },
+    { name:'禁声堡垒', waves:[11,16,21], pool:['shield','hammer','shooter','bomber','scribe','ghost','spore'], special:null, boss:'general' },
+    { name:'肃静大殿', waves:[12,17,23], pool:['scribe','hammer','bell','shield','jester','mimic','slime','ghost'], special:null, boss:'marshal' },
+    { name:'静水回廊', waves:[10,14], pool:['scribe','hammer','bell','shield','jester','mimic','ghost','spore'], special:null, boss:'tide-captain' },
+    { name:'熔心地窟', waves:[11,15], pool:['slime','bomber','hammer','scribe','ghost','spore','shield','jester'], special:null, boss:'magma-general' },
+    { name:'霜寂别院', waves:[12,16], pool:['scribe','shield','hammer','bell','mimic','ghost','spore','slime'], special:null, boss:'frost-marshal' },
+    { name:'无声王座', waves:[], pool:[], special:null, boss:'kangbo' }
+  ];
+
+  const UPGRADES = [
+    { id:'auto', icon:'◎', name:'自动奶球', desc:'自动索敌发射奶球；仍可手动攻击。' },
+    { id:'defense1', icon:'◈', name:'肚皮护盾 · 闪耀', desc:'防御减伤 30% → 42%，强化变身保护。' },
+    { id:'defense2', icon:'◈', name:'肚皮护盾 · 辉煌', desc:'防御减伤 42% → 54%，需先选闪耀。' },
+    { id:'spread', icon:'✦', name:'哈哈三连', desc:'普攻增加两道弹幕，清场更快。' },
+    { id:'pierce', icon:'➶', name:'笑穿全场', desc:'弹幕穿透两个敌人，伤害提升。' },
+    { id:'rapid', icon:'ϟ', name:'根本停不下来', desc:'普攻速度提升约 30%。' },
+    { id:'pot', icon:'◉', name:'护体锅盖', desc:'两片锅盖绕身，击退近身敌人。' },
+    { id:'aftershock', icon:'≋', name:'肚皮地震', desc:'冲撞结束引发冲击波；冷却 2 秒，最多存 2 次。' },
+    { id:'laugh', icon:'☺', name:'笑到地动山摇', desc:'大笑范围扩大，爆发伤害提升。' }
+  ];
+
+  const MONSTERS = [
+    { id:'chaser', name:'憋笑小兵', hp:36, tier:'minion', role:'近战追击', art:'chaser.webp' },
+    { id:'shooter', name:'紫帽法师', hp:42, tier:'minion', role:'远程弹幕', art:'shooter.webp' },
+    { id:'bomber', name:'发条炸弹', hp:30, tier:'minion', role:'定时爆破', art:'bomber.webp' },
+    { id:'shield', name:'盾卫', hp:65, tier:'minion', role:'正面举盾', art:'shield.webp' },
+    { id:'bell', name:'摇铃怪', hp:48, tier:'minion', role:'铃音骚扰', art:'bell.webp' },
+    { id:'jester', name:'弹簧小丑', hp:45, tier:'minion', role:'弹跳突袭', art:'jester.webp' },
+    { id:'mimic', name:'宝箱怪', hp:52, tier:'minion', role:'伪装伏击', art:'mimic.webp' },
+    { id:'ghost', name:'幽灵蛙', hp:40, tier:'minion', role:'飘忽游走', art:'ghost.webp' },
+    { id:'spore', name:'毒雾菇', hp:50, tier:'minion', role:'毒雾区域', art:'spore.webp' },
+    { id:'slime', name:'熔岩史莱姆', hp:30, tier:'minion', role:'熔岩地面', art:'slime.webp' },
+    { id:'hammer', name:'重锤怪', hp:90, tier:'minion', role:'重锤范围', art:'hammer.webp' },
+    { id:'scribe', name:'冰霜书吏', hp:55, tier:'minion', role:'冰霜法术', art:'scribe.webp' },
+    { id:'dog', name:'刀盾狗', hp:108, tier:'elite', role:'清小兵再打背后', art:'dog.webp' },
+    { id:'penguin', name:'凑企鹅', hp:108, tier:'elite', role:'受激后躲避十秒', art:'penguin.webp' },
+    { id:'captain', name:'铁桶队长', hp:3168, tier:'boss', role:'盾牌冲锋', art:'captain.webp' },
+    { id:'general', name:'裂甲将军', hp:5280, tier:'boss', role:'重斧压制', art:'general.webp' },
+    { id:'marshal', name:'缄默大将军', hp:7480, tier:'boss', role:'法阵封锁', art:'marshal.webp' },
+    { id:'tide-captain', name:'潮汐铁卫', hp:3168, tier:'boss', role:'静水守卫', art:'boss-variants/tide-captain.webp' },
+    { id:'magma-general', name:'熔火执刑官', hp:5280, tier:'boss', role:'熔心守卫', art:'boss-variants/magma-general.webp' },
+    { id:'frost-marshal', name:'霜寂侍从长', hp:7480, tier:'boss', role:'霜寂守卫', art:'boss-variants/frost-marshal.webp' },
+    { id:'kangbo', name:'康神', hp:3400, tier:'final', role:'蓄力 / 短冲刺 / 长冲刺 / 永康激光 · CXY 羁绊助阵', art:'kangbo.webp' }
+  ];
+
+  const TIER_LABEL = { minion:'小兵', elite:'精英', boss:'首领', final:'最终' };
+  const ART_BASE = '../assets/characters/';
+  const MONSTER_MAP = Object.create(null);
+  MONSTERS.forEach(m => { MONSTER_MAP[m.id] = m; });
+
+  const zoneGrid = document.getElementById('zoneGrid');
+  const upGrid = document.getElementById('upGrid');
+  const bestiaryList = document.getElementById('bestiaryList');
+  const bestiaryCount = document.getElementById('bestiaryCount');
+  const bestSearch = document.getElementById('bestSearch');
+  const upCount = document.getElementById('upCount');
+  const zoneCounter = document.getElementById('zoneCounter');
+  const sumChapter = document.getElementById('sumChapter');
+  const sumName = document.getElementById('sumName');
+  const sumMeta = document.getElementById('sumMeta');
+  const saveChip = document.getElementById('saveChip');
+  const toastEl = document.getElementById('toast');
+  const launchBtn = document.getElementById('launchBtn');
+  const previewDialog = document.getElementById('previewDialog');
+  const resetDialog = document.getElementById('resetDialog');
+  const fileDialog = document.getElementById('fileDialog');
+  const stage = document.getElementById('stage');
+  const stageTitle = document.getElementById('stageTitle');
+  const stageBack = document.getElementById('stageBack');
+  const stageReenter = document.getElementById('stageReenter');
+  const stagePrev = document.getElementById('stagePrev');
+  const stageNext = document.getElementById('stageNext');
+  const gameFrame = document.getElementById('gameFrame');
+
+  let selectedZone = 0;
+  let selected = new Set();
+  let bestFilter = 'all';
+  let toastTimer = 0;
+  let stageTimer = 0;
+  let stageZone = 0;
+
+  function readPrefs(){
+    try{
+      const p = JSON.parse(localStorage.getItem(PREFS_KEY) || 'null');
+      if(p && Number.isInteger(p.zone) && p.zone >= 0 && p.zone < ZONES.length) selectedZone = p.zone;
+      if(p && Array.isArray(p.upgrades)){
+        const valid = new Set(UPGRADES.map(u => u.id));
+        selected = new Set(p.upgrades.filter(id => valid.has(id)));
+        if(selected.has('defense2')) selected.add('defense1');
+      }
+    }catch(_){}
+  }
+
+  function readSave(){
+    try{
+      const raw = localStorage.getItem(SAVE_KEY);
+      if(!raw) return null;
+      const data = JSON.parse(raw);
+      if(!data || data.schema !== 1 || !data.state) return null;
+      const z = data.state.zone;
+      if(!Number.isInteger(z) || z < 0 || z >= ZONES.length) return null;
+      return { zone:z, phase:data.state.phase, savedAt:data.savedAt };
+    }catch(_){ return null; }
+  }
+
+  function updateSaveChip(text){
+    if(text){
+      saveChip.textContent = text;
+      saveChip.classList.remove('empty');
+      return;
+    }
+    const s = readSave();
+    if(s){
+      const chapter = Math.min(ZONES.length, s.zone + (s.phase === 'transition' ? 2 : 1));
+      saveChip.textContent = '本机存档 · 第 ' + chapter + ' 章';
+      saveChip.classList.remove('empty');
+    }else{
+      saveChip.textContent = '未检测到存档';
+      saveChip.classList.add('empty');
+    }
+  }
+
+  function showToast(message, error){
+    toastEl.textContent = message;
+    toastEl.classList.toggle('error', !!error);
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 3600);
+  }
+
+  function zoneEnemies(z){
+    const list = z.pool.slice();
+    if(z.special) list.push(z.special);
+    if(z.boss) list.push(z.boss);
+    return list;
+  }
+
+  function zoneMeta(z, index){
+    if(index === ZONES.length - 1) return '最终 Boss · 康神 3400 HP';
+    const total = z.waves.reduce((a,b) => a + b, 0);
+    let meta = z.waves.length + ' 波 · ' + total + ' 敌';
+    if(z.special) meta += ' · 精英 ' + MONSTER_MAP[z.special].name;
+    else if(z.boss) meta += ' · 首领 ' + MONSTER_MAP[z.boss].name;
+    return meta;
+  }
+
+  function renderZones(){
+    zoneGrid.innerHTML = ZONES.map((z, i) => {
+      const final = i === ZONES.length - 1;
+      return '<button type="button" class="zone-card' + (final ? ' final' : '') + '" role="listitem" data-zone="' + i + '" aria-pressed="false" aria-label="第 ' + (i + 1) + ' 章 ' + z.name + '">' +
+        '<span class="zone-check" aria-hidden="true">✓</span>' +
+        '<span class="zone-idx">CH.' + String(i + 1).padStart(2, '0') + (final ? ' · FINAL' : '') + '</span>' +
+        '<span class="zone-name">' + z.name + '</span>' +
+        '<span class="zone-meta">' + zoneMeta(z, i) + '</span>' +
+      '</button>';
+    }).join('');
+  }
+
+  function appearanceZones(id){
+    const hits = [];
+    ZONES.forEach((z, i) => {
+      if(z.pool.indexOf(id) >= 0 || z.special === id || z.boss === id) hits.push(i);
+    });
+    return hits;
+  }
+
+  function formatZones(zones){
+    if(!zones.length) return '未配置';
+    const nums = zones.map(i => i + 1).sort((a,b) => a - b);
+    const parts = [];
+    let start = nums[0], prev = nums[0];
+    for(let i = 1; i <= nums.length; i++){
+      const n = nums[i];
+      if(i === nums.length || n !== prev + 1){
+        parts.push(start === prev ? String(start) : start + '–' + prev);
+        start = n;
+      }
+      prev = n;
+    }
+    return '第 ' + parts.join('、') + ' 章';
+  }
+
+  function renderBestiary(){
+    const q = bestSearch.value.trim().toLowerCase();
+    const tierRank = { minion:0, elite:1, boss:2, final:3 };
+    const rows = MONSTERS.filter(m => {
+      if(bestFilter === 'zone' && appearanceZones(m.id).indexOf(selectedZone) < 0) return false;
+      if(bestFilter === 'boss' && m.tier !== 'boss' && m.tier !== 'final') return false;
+      if(q){
+        const hay = (m.name + ' ' + m.id + ' ' + m.role).toLowerCase();
+        if(hay.indexOf(q) < 0) return false;
+      }
+      return true;
+    }).sort((a, b) => {
+      const az = appearanceZones(a.id).indexOf(selectedZone) >= 0 ? 0 : 1;
+      const bz = appearanceZones(b.id).indexOf(selectedZone) >= 0 ? 0 : 1;
+      return az - bz || tierRank[a.tier] - tierRank[b.tier] || a.hp - b.hp;
+    });
+
+    bestiaryCount.textContent = rows.length + ' 种';
+
+    if(!rows.length){
+      bestiaryList.innerHTML = '<div class="empty">没有符合条件的怪物</div>';
+      return;
+    }
+
+    bestiaryList.innerHTML = rows.map(m => {
+      const inZone = appearanceZones(m.id).indexOf(selectedZone) >= 0;
+      return '<div class="monster' + (inZone ? ' in-zone' : '') + '" role="listitem">' +
+        '<span class="monster-art"><img src="' + ART_BASE + m.art + '" alt="" loading="lazy" draggable="false"></span>' +
+        '<span class="monster-copy">' +
+          '<span class="line1"><b>' + m.name + '</b><span class="tag ' + m.tier + '">' + TIER_LABEL[m.tier] + '</span><span class="monster-id">' + m.id + '</span></span>' +
+          '<span class="monster-role">' + m.role + '</span>' +
+          '<span class="monster-where">' + (inZone ? '<span class="now">本章出现</span> · ' : '') + formatZones(appearanceZones(m.id)) + '</span>' +
+        '</span>' +
+        '<span class="monster-hp"><b>' + m.hp + '</b><small>BASE HP</small></span>' +
+      '</div>';
+    }).join('');
+  }
+
+  function renderUpgrades(){
+    upGrid.innerHTML = UPGRADES.map(u => {
+      const on = selected.has(u.id);
+      return '<button type="button" class="up-card' + (on ? ' selected' : '') + '" data-up="' + u.id + '" aria-pressed="' + on + '">' +
+        '<span class="up-flag" aria-hidden="true">ON</span>' +
+        '<span class="up-icon" aria-hidden="true">' + u.icon + '</span>' +
+        '<span class="up-copy"><b>' + u.name + '</b><small>' + u.desc + '</small></span>' +
+      '</button>';
+    }).join('');
+    upCount.textContent = selected.size + ' / ' + UPGRADES.length;
+  }
+
+  function renderSummary(){
+    const z = ZONES[selectedZone];
+    const total = zoneEnemies(z).length;
+    sumChapter.textContent = 'CH.' + String(selectedZone + 1).padStart(2, '0');
+    sumName.textContent = z.name;
+    sumMeta.innerHTML = '异能 ' + selected.size + ' 项 · 本章敌人 ' + total + ' 种 · <span class="sum-warn">会覆盖本机剧情存档</span>';
+    zoneCounter.textContent = 'CH.' + String(selectedZone + 1).padStart(2, '0');
+  }
+
+  function updateZoneUI(){
+    Array.prototype.forEach.call(zoneGrid.children, (btn, i) => {
+      const on = i === selectedZone;
+      btn.classList.toggle('selected', on);
+      btn.setAttribute('aria-pressed', String(on));
+    });
+    renderBestiary();
+    renderSummary();
+  }
+
+  function savePrefs(){
+    try{
+      localStorage.setItem(PREFS_KEY, JSON.stringify({ zone:selectedZone, upgrades:[...selected] }));
+    }catch(_){}
+  }
+
+  function buildSave(){
+    const target = selectedZone;
+    const upgrades = [...selected];
+    const zoneField = target === 0 ? 0 : target - 1;
+    const phase = target === 0 ? 'playing' : 'transition';
+    const state = {
+      zone: zoneField,
+      wave: 0,
+      waveRemaining: 0,
+      spawnTimer: 0,
+      nextWaveTimer: 0.6,
+      elapsed: 0,
+      zoneElapsed: 0,
+      kills: 0,
+      deaths: 0,
+      combo: 0,
+      maxCombo: 0,
+      comboTimer: 0,
+      energy: 30,
+      dashCooldown: 0,
+      dashMax: 2,
+      dashCharges: 2,
+      attackTimer: 0.35,
+      manualCooldown: 0,
+      peaches: 0,
+      slowRemaining: 0,
+      invulnerable: 1.8,
+      clock: 0,
+      transitionTimer: target === 0 ? 0 : 0.4,
+      bossPhase: 1,
+      lastPotHit: 0,
+      superCharge: 0,
+      superCastRemaining: 0,
+      superLaughElapsed: 0,
+      superClickRemaining: 0,
+      superDamageDealt: 0,
+      superDamageBudget: 0,
+      bossLaughRemaining: 0,
+      lastSuperTap: 0,
+      nextId: 2,
+      seed: 43892,
+      comboCooldown: 0,
+      naidanElapsed: -1,
+      naidanCooldown: 0,
+      dashUnlocked: true,
+      superUsed: false,
+      superClearedMinions: false,
+      specialSpawned: false,
+      minibossSpawned: false,
+      upgrades: upgrades,
+      pending: [],
+      upgradeNext: 'zone',
+      phase: phase,
+      checkpoint: {
+        upgrades: upgrades.slice(),
+        kills: 0,
+        energy: 30,
+        peaches: 0,
+        dashUnlocked: true
+      },
+      hero: {
+        id: 1,
+        kind: 'hero',
+        x: 265,
+        y: 552,
+        z: 0,
+        vz: 0,
+        vx: 0,
+        vy: 0,
+        hp: 120,
+        maxHp: 120,
+        face: 1,
+        hit: 0,
+        cooldown: 1,
+        state: 'idle',
+        timer: 0,
+        age: 0,
+        dead: false,
+        radius: 28,
+        attack: 0,
+        targetX: 265,
+        targetY: 552,
+        rageTime: 0,
+        rageTriggered: false,
+        buffTime: 0,
+        aiCycle: 0,
+        waveTier: 0,
+        elite: false,
+        combatPhase: 1,
+        comboPartnerId: 0,
+        dashHits: [],
+        dogNodes: [],
+        attackPoints: [],
+        attackAreas: []
+      },
+      actors: [],
+      shots: [],
+      crates: []
+    };
+    return { schema:1, savedAt:Date.now(), state:state };
+  }
+
+  function writeCurrentRun(){
+    const payload = buildSave();
+    localStorage.setItem(SAVE_KEY, JSON.stringify(payload));
+    savePrefs();
+    updateSaveChip('已写入 · 第 ' + (selectedZone + 1) + ' 章');
+    return payload;
+  }
+
+  function stageLabel(){
+    return '第 ' + (stageZone + 1) + ' 章 · ' + ZONES[stageZone].name;
+  }
+
+  function updateStageNav(){
+    stageTitle.textContent = stageLabel();
+    stagePrev.disabled = stageZone <= 0;
+    stageNext.disabled = stageZone >= ZONES.length - 1;
+    stageReenter.textContent = '重进本章';
+  }
+
+  function loadStageFrame(){
+    clearInterval(stageTimer);
+    gameFrame.src = '../index.html?launch=' + Date.now();
+    let clicks = 0;
+    let lastClick = 0;
+    const started = Date.now();
+    stageTimer = setInterval(function(){
+      let doc = null;
+      try{ doc = gameFrame.contentDocument; }catch(_){ return; }
+      if(!doc) return;
+      const btn = doc.getElementById('continue-button');
+      const visible = btn && !btn.classList.contains('hidden');
+      if(visible && clicks < 3 && Date.now() - lastClick > 1200){
+        btn.click();
+        clicks++;
+        lastClick = Date.now();
+      }
+      if(clicks > 0 && !visible){
+        clearInterval(stageTimer);
+        try{ gameFrame.contentWindow.focus(); }catch(_){}
+      }
+      if(Date.now() - started > 15000) clearInterval(stageTimer);
+    }, 350);
+  }
+
+  function openGame(){
+    stageZone = selectedZone;
+    updateStageNav();
+    stage.classList.add('open');
+    stage.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('stage-open');
+    showToast('已进入' + stageLabel() + '，可直接操作游戏。');
+    loadStageFrame();
+  }
+
+  function restartStage(zone){
+    zone = Math.max(0, Math.min(ZONES.length - 1, zone));
+    gameFrame.src = 'about:blank';
+    clearInterval(stageTimer);
+    setTimeout(function(){
+      selectedZone = zone;
+      stageZone = zone;
+      renderUpgrades();
+      updateZoneUI();
+      updateStageNav();
+      try{
+        writeCurrentRun();
+      }catch(_){
+        showToast('写入存档失败：浏览器禁用了本机存储。', true);
+        return;
+      }
+      loadStageFrame();
+      showToast('已重进' + stageLabel() + '。');
+    }, 320);
+  }
+
+  function closeStage(){
+    clearInterval(stageTimer);
+    gameFrame.src = 'about:blank';
+    stage.classList.remove('open');
+    stage.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('stage-open');
+    setTimeout(updateSaveChip, 400);
+  }
+
+  function onLaunch(){
+    if(location.protocol === 'file:'){
+      fileDialog.showModal();
+      return;
+    }
+    try{
+      writeCurrentRun();
+    }catch(_){
+      showToast('写入存档失败：浏览器禁用了本机存储。', true);
+      return;
+    }
+    launchBtn.disabled = true;
+    setTimeout(function(){ launchBtn.disabled = false; }, 1200);
+    openGame();
+  }
+
+  /* events */
+  zoneGrid.addEventListener('click', function(e){
+    const card = e.target.closest('[data-zone]');
+    if(!card) return;
+    selectedZone = Number(card.getAttribute('data-zone'));
+    if(!Number.isInteger(selectedZone)) return;
+    savePrefs();
+    updateZoneUI();
+  });
+
+  upGrid.addEventListener('click', function(e){
+    const card = e.target.closest('[data-up]');
+    if(!card) return;
+    const id = card.getAttribute('data-up');
+    if(id === 'defense2' && !selected.has('defense1')){
+      selected.add('defense1');
+      showToast('已自动补选「肚皮护盾 · 闪耀」。');
+    }
+    if(selected.has(id)){
+      selected.delete(id);
+      if(id === 'defense1') selected.delete('defense2');
+    }else{
+      selected.add(id);
+    }
+    savePrefs();
+    renderUpgrades();
+    renderSummary();
+  });
+
+  document.getElementById('selectAll').addEventListener('click', function(){
+    selected = new Set(UPGRADES.map(u => u.id));
+    savePrefs();
+    renderUpgrades();
+    renderSummary();
+  });
+
+  document.getElementById('clearAll').addEventListener('click', function(){
+    selected.clear();
+    savePrefs();
+    renderUpgrades();
+    renderSummary();
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-filter]'), function(btn){
+    btn.addEventListener('click', function(){
+      bestFilter = btn.getAttribute('data-filter');
+      Array.prototype.forEach.call(document.querySelectorAll('[data-filter]'), function(b){
+        b.classList.toggle('active', b === btn);
+      });
+      renderBestiary();
+    });
+  });
+
+  bestSearch.addEventListener('input', renderBestiary);
+
+  document.getElementById('previewSave').addEventListener('click', function(){
+    const payload = buildSave();
+    document.getElementById('previewMeta').textContent =
+      '第 ' + (selectedZone + 1) + ' 章 · ' + ZONES[selectedZone].name +
+      ' · 异能 ' + selected.size + ' 项 · 实际写入 zone=' + payload.state.zone + ' / phase=' + payload.state.phase;
+    document.getElementById('previewCode').textContent = JSON.stringify(payload, null, 2);
+    previewDialog.showModal();
+  });
+
+  document.getElementById('copySave').addEventListener('click', function(){
+    const code = document.getElementById('previewCode').textContent;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(code).then(function(){ showToast('已复制存档 JSON。'); },
+        function(){ showToast('复制失败，请手动选中文本。', true); });
+    }else{
+      showToast('当前浏览器不支持自动复制。', true);
+    }
+  });
+
+  document.getElementById('resetSave').addEventListener('click', function(){
+    resetDialog.showModal();
+  });
+
+  document.getElementById('confirmReset').addEventListener('click', function(){
+    try{ localStorage.removeItem(SAVE_KEY); }catch(_){}
+    resetDialog.close();
+    updateSaveChip();
+    showToast('剧情存档已清除。');
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-close]'), function(btn){
+    btn.addEventListener('click', function(){
+      const dlg = document.getElementById(btn.getAttribute('data-close'));
+      if(dlg) dlg.close();
+    });
+  });
+
+  [previewDialog, resetDialog, fileDialog].forEach(function(dlg){
+    dlg.addEventListener('click', function(e){
+      if(e.target === dlg) dlg.close();
+    });
+  });
+
+  document.getElementById('fileOpenHttp').addEventListener('click', function(){
+    location.href = 'http://127.0.0.1:8788/testverson/dev-launcher.html';
+  });
+
+  launchBtn.addEventListener('click', onLaunch);
+  stageBack.addEventListener('click', closeStage);
+  stageReenter.addEventListener('click', function(){ restartStage(stageZone); });
+  stagePrev.addEventListener('click', function(){ if(stageZone > 0) restartStage(stageZone - 1); });
+  stageNext.addEventListener('click', function(){ if(stageZone < ZONES.length - 1) restartStage(stageZone + 1); });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && stage.classList.contains('open')) closeStage();
+  });
+
+  readPrefs();
+  renderZones();
+  renderUpgrades();
+  updateZoneUI();
+  updateSaveChip();
+  gameFrame.addEventListener('load', function(){
+    if(stage.classList.contains('open')){
+      try{ gameFrame.contentWindow.focus(); }catch(_){}
+    }
+  });
+  if(location.protocol === 'file:'){
+    showToast('建议通过本地服务器打开（启动游戏.bat），否则存档可能不共享。', true);
+  }
+})();
+</script>
+</body>
+</html>
